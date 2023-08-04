@@ -1,0 +1,46 @@
+
+
+pagination size 10 , from document ke 5000:
+curl -XGET '127.0.0.1:9200/movieswiki/_search?size=10&from=5000&pretty=true'
+
+
+
+autocomplete search:
+curl -s --request GET 'http://localhost:9200/movies/_search?pretty' --data-raw '{
+   "size": 5,
+   "query": {
+       "multi_match": {
+           "query": "The dark",
+           "type": "bool_prefix",
+           "fields": [
+               "title",
+               "title._2gram",
+               "title._3gram"
+           ]
+       }
+   }
+}'
+
+
+buat 2 type mapping (bisa jadi fulltext search, keyword, sorting, aggregation): https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html
+
+
+full text search & sorting
+GET my-index-000001/_search
+{
+  "query": {
+    "match": {
+      "city": "york"
+    }
+  },
+  "sort": {
+    "city.raw": "asc"
+  },
+  "aggs": {
+    "Cities": {
+      "terms": {
+        "field": "city.raw"
+      }
+    }
+  }
+}
