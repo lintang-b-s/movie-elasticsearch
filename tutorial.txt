@@ -44,3 +44,44 @@ GET my-index-000001/_search
     }
   }
 }
+
+
+
+search & filter:
+//{“multi_match”: {“query”: “star”, “fields”: [“title”, “synopsis” ] } }
+	// multi_match , query ke beberapa field (full text search)
+
+	/*
+		{
+			"query":{
+				"bool": {
+					"should": [{“multi_match”: {
+									“query”: “star”,
+									“fields”: [“title”, “synopsis” , "director", "cast"],
+									"fuzziness" : "AUTO"
+									} },
+
+					],
+					"filter": ["terms": {"releaseYear": [args.ReleaseYear]},
+							"terms" : { "director.raw": [args.Director] },
+							"terms": { "cast.raw": [args.Cast]},
+							"terms" : { "genre": [args.Genre] },
+							"range" : { "rating" : { "gte": args.MinRating } }
+						],
+				}
+			},
+			"from": args.From,
+			"size": args.Size,
+
+		}
+
+	*/
+
+
+
+text vs keyword: https://codecurated.com/blog/elasticsearch-text-vs-keyword/?ref=hackernoon.com
+typo & mispelling: https://hackernoon.com/how-to-use-fuzzy-query-matches-in-elasticsearch-dh1h3167
+
+
+
+

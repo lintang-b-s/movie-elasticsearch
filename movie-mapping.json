@@ -6,7 +6,7 @@
             "title": { 
               "type": "text",
               "fields": {
-                "raw": {"type":  "keyword"}
+                "raw": {"type":  "search_as_you_type"}
               }
             },
             "director":  { 
@@ -22,7 +22,9 @@
               }
             },
             "genre": { "type": "keyword"},
-            "synopsis": {"type": "text"}
+            "synopsis": {"type": "text"},
+            "rating": {"type":  "double"},
+            "image": {"type":  "keyword"}
           }
         }  
       }

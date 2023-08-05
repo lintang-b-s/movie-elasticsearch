@@ -28,16 +28,16 @@ type (
 	}
 
 	Movie interface {
-		Index(context.Context, entity.Movie) (entity.Movie, error)
+		Index(context.Context, entity.Movie) error
 		Search(context.Context, entity.Search) ([]entity.Movie, error)
-		AutoComplete(context.Context, entity.Search) ([]entity.Movie, error)
-		GetByGenre(context.Context, entity.Search) ([]entity.Movie, error)
+		AutoComplete(context.Context, entity.AutoComplete) ([]entity.Movie, error)
+		GetByGenre(context.Context, entity.GetByGenre) ([]entity.Movie, error)
 	}
 
 	MovieElasticSearchRepo interface {
-		Index(context.Context, entity.Movie) (entity.Movie, error)
+		Index(context.Context, entity.Movie) error
 		Search(context.Context, entity.Search) ([]entity.Movie, error)
-		AutoComplete(context.Context, entity.Search) ([]entity.Movie, error)
-		GetByGenre(context.Context, entity.Search) ([]entity.Movie, error)
+		AutoComplete(context.Context, entity.AutoComplete) ([]entity.Movie, error)
+		GetByGenre(context.Context, entity.GetByGenre) ([]entity.Movie, error)
 	}
 )
