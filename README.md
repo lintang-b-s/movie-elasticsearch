@@ -9,3 +9,6 @@ step to import movie data:
  
  pagination size 10 , from document ke 5000:
 curl -XGET '127.0.0.1:9200/movieswiki/_search?size=10&from=5000&pretty=true'
+
+
+curl -XPOST localhost:9200/movieswiki/_bulk -H "Content-Type: application/x-ndjson" --data-binary @bulk-movies.json

@@ -24,7 +24,8 @@
             "genre": { "type": "keyword"},
             "synopsis": {"type": "text"},
             "rating": {"type":  "double"},
-            "image": {"type":  "keyword"}
+            "image": {"type":  "keyword"},
+            "url": {"type": "keyword"}
           }
         }  
       }

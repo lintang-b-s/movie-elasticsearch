@@ -85,3 +85,6 @@ typo & mispelling: https://hackernoon.com/how-to-use-fuzzy-query-matches-in-elas
 
 
 
+
+
+jq -c -r ".[]" movies-tenflix.json | while read line; do echo '{"index":{}}'; echo $line; done > bulk-tenflix.json

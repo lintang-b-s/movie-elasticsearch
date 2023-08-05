@@ -1,42 +1,63 @@
 import json
 import requests
 import sys
+from elasticsearch import Elasticsearch, helpers
+
 
 
 # create mapping for index movieswiki
+# if exists delete index
+headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+urlCheck = "http://localhost:9200/movieswiki/_mapping"
+urlDelete= "http://localhost:9200/movieswiki"
+rMap = requests.get(urlCheck, headers=headers)
+if (rMap.status_code == 200):
+    r  = requests.delete(urlDelete, headers=headers)
+
+
+
+
 urlMap  = "http://localhost:9200/movieswiki"
 fMap = open('movie-mapping.json')
-headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+
 dataMap = json.load(fMap)
-# print(dataMap["peta"])
+
+
 rMap = requests.put(urlMap, data=json.dumps(dataMap["peta"]), headers=headers)
 print(rMap.status_code)
+print(rMap.text)
 
-fMap.close()
+# fMap.close()
 
 
 # indexing movieswiki index with document in movies-tenflix.json
-url = "http://localhost:9200/{}/_doc".format("movieswiki")
+url = "http://localhost:9200/_bulk".format("movieswiki")
 
-# Opening JSON file
-f = open('movies-tenflix.json')
+
+# bulk indexing
+f = open('bulk-movies.json')
 
 # returns JSON object as
 # a dictionary
 data = json.load(f)
 
-# print json data
-#print(data['prizes'][0])
 
-# print number of documents in the json
 count = len(data)
 print(count)
+es_client = Elasticsearch('http://localhost:9200')
 
-# index each document
+
+# index bulk document
+document_list = []
+i =0
 for each in range(count):
     movie = data[each]
-    r = requests.post(url, data=json.dumps(movie), headers=headers)
-    # print(r.status_code)
+    document_list.append(movie)
+    if i == count-1:
+        helpers.bulk(es_client, document_list, index='movieswiki')
+    i +=1
+        
 
-# Closing file
 f.close()
