@@ -21,9 +21,12 @@ import (
 // Run creates objects via constructors.
 func Run(cfg *config.Config) {
 	l := logger.New(cfg.Log.Level)
+	cfgEs := elasticsearch.Config{
+		Addresses: []string{"http://elasticsearch:9200"},
+	}
 
 	// elasticsearch client
-	esClient, err := elasticsearch.NewDefaultClient()
+	esClient, err := elasticsearch.NewClient(cfgEs)
 
 	movieUseCase := usecase.NewMovie(
 		repo.NewMovieEsRepo(esClient),

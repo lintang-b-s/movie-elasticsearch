@@ -82,12 +82,12 @@ func (r *movieRoutes) doIndex(c *gin.Context) {
 type searchRequest struct {
 	ReleaseYear *[]int    `json:"rly" binding:"-"`
 	Query       *string   `json:"q" binding:"required"`
-	Director    *[]string `json:"dir" binding:"-"`
+	Director    *string   `json:"dir" binding:"-"`
 	Cast        *[]string `json:"cast" binding:"-"`
 	Genre       *[]string `json:"gnr" binding:"-"`
 	MinRating   *float64  `json:"mrtg" binding:"-"`
-	From        int64     `json:"from" binding:"-"`
-	Size        int64     `json:"size" binding:"-"`
+	From        *int64    `json:"from" binding:"required"`
+	Size        int64     `json:"size" binding:"required"`
 }
 
 type searchResponse struct {
@@ -103,11 +103,10 @@ type searchResponse struct {
 // @Param       request body searchRequest true "Set up search"
 // @Success     200 {object} searchResponse
 // @Failure     500 {object} response
-// @Router      /movies/index [post]
+// @Router      /movies/search [post]
 func (r *movieRoutes) search(c *gin.Context) {
 	var req searchRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-
 		r.l.Error(err, "http - v1 - search")
 		errorResponse(c, http.StatusBadRequest, "invalid request body")
 		return
@@ -163,7 +162,7 @@ type autoCompleteRequest struct {
 // @Param       request body autoCompleteRequest true "Set up autocomplete"
 // @Success     200 {object} searchResponse
 // @Failure     500 {object} response
-// @Router      /movies/index [post]
+// @Router      /movies/autocomplete [post]
 func (r *movieRoutes) autoComplete(c *gin.Context) {
 	var req autoCompleteRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -200,9 +199,10 @@ func (r *movieRoutes) autoComplete(c *gin.Context) {
 }
 
 type getByGenreRequest struct {
-	Genre string `json:"genre" binding:"-"`
-	From  int64  `json:"from" binding:"-"`
-	Size  int64  `json:"size" binding:"-"`
+	Genre       *string `json:"genre" binding:"-"`
+	ReleaseYear *[]int  `json:"rly" binding:"-"`
+	From        *int64  `json:"from" binding:"-"`
+	Size        int64   `json:"size" binding:"-"`
 }
 
 // @Summary  getByGenre  movies
@@ -214,7 +214,7 @@ type getByGenreRequest struct {
 // @Param       request body getByGenre true "Set up genre"
 // @Success     200 {object} searchResponse
 // @Failure     500 {object} response
-// @Router      /movies/index [post]
+// @Router      /movies/genre [post]
 func (r *movieRoutes) getByGenre(c *gin.Context) {
 	var req getByGenreRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -227,13 +227,14 @@ func (r *movieRoutes) getByGenre(c *gin.Context) {
 	movies, err := r.m.GetByGenre(
 		c.Request.Context(),
 		entity.GetByGenre{
-			Genre: req.Genre,
-			Size:  req.Size,
-			From:  req.From,
+			Genre:       req.Genre,
+			Size:        req.Size,
+			From:        req.From,
+			ReleaseYear: req.ReleaseYear,
 		})
 	if err != nil {
 		var ierr *internal.Error
-		r.l.Error(err, "http - v1 - autoComplete")
+		r.l.Error(err, "http - v1 - getByGenre")
 		if !errors.As(err, &ierr) {
 			errorResponse(c, http.StatusInternalServerError, "movie service problems")
 		} else {

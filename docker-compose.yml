@@ -3,14 +3,14 @@ services:
 
 
 
-  # app:
-  #   build: .
-  #   container_name: app
-  #   image: app
-  #   environment:
-  #     ELASTICSEARCH_URL: elasticsearch:9200
-  #   ports:
-  #     - 8080:8080
+  app:
+   build: .
+   container_name: app
+   image: app
+   environment:
+     - ELASTICSEARCH_URL=elasticsearch:9200
+   ports:
+     - 8080:8080
 
 #  integration:
 #    build:

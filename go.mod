@@ -5,14 +5,14 @@ go 1.17
 require (
 	github.com/Conight/go-googletrans v0.0.0-20200929083318-176776d061cb
 	github.com/Eun/go-hit v0.5.23
-	github.com/Masterminds/squirrel v1.5.2
+
 	github.com/elastic/go-elasticsearch/v8 v8.4.0
 	github.com/gin-gonic/gin v1.7.7
 	github.com/golang-migrate/migrate/v4 v4.15.1
 	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.3.0
 	github.com/ilyakaznacheev/cleanenv v1.2.6
-	github.com/jackc/pgx/v4 v4.14.1
+
 	github.com/prometheus/client_golang v1.11.0
 	github.com/rs/zerolog v1.26.1
 	github.com/streadway/amqp v1.0.0

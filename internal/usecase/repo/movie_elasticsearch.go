@@ -83,36 +83,48 @@ func (r *MovieRepo) Search(ctx context.Context, args entity.Search) ([]entity.Mo
 		must = append(must, map[string]interface{}{
 			"multi_match": map[string]interface{}{
 				"query":     args.Query,
-				"fields":    []string{"title", "synopsis", "director", "cast"},
+				"fields":    []string{"title", "synopsis"},
 				"fuzziness": "AUTO",
 			},
 		})
 	}
 
+	oneQuery := map[string]interface{}{
+		"multi_match": map[string]interface{}{
+			"query":     args.Query,
+			"fields":    []string{"title^3", "synopsis", "director", "cast"},
+			"fuzziness": "AUTO",
+		},
+	}
+
 	if args.ReleaseYear != nil {
 		filter = append(filter, map[string]interface{}{
-			"terms":       map[string]interface{}{},
-			"releaseYear": args.ReleaseYear,
+			"terms": map[string]interface{}{
+				"releaseYear": args.ReleaseYear,
+			},
 		})
 	}
 
 	if args.Director != nil {
 		filter = append(filter, map[string]interface{}{
-			"terms":        map[string]interface{}{},
-			"director.raw": args.Director,
+			"term": map[string]interface{}{
+				"director.raw": args.Director,
+			},
 		})
 	}
 	if args.Cast != nil {
 		filter = append(filter, map[string]interface{}{
-			"terms":    map[string]interface{}{},
-			"cast.raw": args.Cast,
+			"terms": map[string]interface{}{
+				"cast.raw": args.Cast,
+			},
 		})
 	}
 
 	if args.Genre != nil {
 		filter = append(filter, map[string]interface{}{
-			"terms": map[string]interface{}{},
-			"genre": args.Genre,
+			"terms": map[string]interface{}{
+				"genre": args.Genre,
+			},
 		})
 	}
 
@@ -132,21 +144,20 @@ func (r *MovieRepo) Search(ctx context.Context, args entity.Search) ([]entity.Mo
 		query = map[string]interface{}{
 			"query": map[string]interface{}{
 				"bool": map[string]interface{}{
-					"must":   must,
+					"must":   oneQuery,
 					"filter": filter,
 				},
 			},
 		}
 	} else {
 		query = map[string]interface{}{
-			"query": map[string]interface{}{
-				"bool": map[string]interface{}{
-					"must": must,
-				},
-			},
+			"query": oneQuery,
 		}
 	}
 
+	query["sort"] = []interface{}{
+		"_score",
+	}
 	query["from"] = args.From
 	query["size"] = args.Size
 
@@ -170,7 +181,7 @@ func (r *MovieRepo) Search(ctx context.Context, args entity.Search) ([]entity.Mo
 	defer resp.Body.Close()
 
 	if resp.IsError() {
-		return []entity.Movie{}, fmt.Errorf("MovieRepo - Search - req.Do: %w", err)
+		return []entity.Movie{}, fmt.Errorf("MovieRepo - Search - req.Do: %w", resp.String())
 
 	}
 
@@ -244,7 +255,7 @@ func (r *MovieRepo) AutoComplete(ctx context.Context, args entity.AutoComplete) 
 	defer resp.Body.Close()
 
 	if resp.IsError() {
-		return []entity.Movie{}, fmt.Errorf("MovieRepo - AutoComplete - req.Do: %w", err)
+		return []entity.Movie{}, fmt.Errorf("MovieRepo - AutoComplete - req.Do: %w", resp.String())
 
 	}
 
@@ -284,13 +295,31 @@ func (r *MovieRepo) AutoComplete(ctx context.Context, args entity.AutoComplete) 
 
 func (r *MovieRepo) GetByGenre(ctx context.Context, args entity.GetByGenre) ([]entity.Movie, error) {
 	var query map[string]interface{}
+
+	filter := make([]interface{}, 0, 2)
+
+	if args.ReleaseYear != nil {
+		filter = append(filter, map[string]interface{}{
+			"terms": map[string]interface{}{
+				"releaseYear": args.ReleaseYear,
+			},
+		})
+	}
+
+	filter = append(filter, map[string]interface{}{
+		"term": map[string]interface{}{
+			"genre": args.Genre,
+		},
+	})
+
 	query = map[string]interface{}{
 		"query": map[string]interface{}{
-			"term": map[string]interface{}{
-				"genre": args.Genre,
+			"bool": map[string]interface{}{
+				"filter": filter,
 			},
 		},
 	}
+
 	query["from"] = args.From
 	query["size"] = args.Size
 
@@ -313,7 +342,7 @@ func (r *MovieRepo) GetByGenre(ctx context.Context, args entity.GetByGenre) ([]e
 	defer resp.Body.Close()
 
 	if resp.IsError() {
-		return []entity.Movie{}, fmt.Errorf("MovieRepo - GetByGenre - req.Do: %w", err)
+		return []entity.Movie{}, fmt.Errorf("MovieRepo - GetByGenre - req.Do: %w", resp.String())
 
 	}
 
