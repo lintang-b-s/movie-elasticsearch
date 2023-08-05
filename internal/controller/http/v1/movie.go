@@ -23,6 +23,7 @@ func newMovieRoutes(handler *gin.RouterGroup, m usecase.Movie, l logger.Interfac
 		h.POST("/index", r.doIndex)
 		h.POST("/search", r.search)
 		h.POST("/autocomplete", r.autoComplete)
+		h.POST("/genre", r.getByGenre)
 	}
 }
 
