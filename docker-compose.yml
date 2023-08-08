@@ -33,11 +33,10 @@ services:
     environment:
       - cluster-name=elastic-cluster
       - xpack.security.enabled=false
-#      - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-      - node.name=elasticsearch-01
+      - node.name=elasticsearch
       - cluster.initial_master_nodes=elasticsearch-01,elasticsearch
-      - discovery.seed_hosts=elasticsearch
+      - discovery.seed_hosts=elasticsearch-01
     ulimits:
       memlock:
         soft: -1
@@ -55,7 +54,6 @@ services:
     environment:
       - cluster-name=elastic-cluster
       - xpack.security.enabled=false
-#      - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
       - node.name=elasticsearch-01
       - cluster.initial_master_nodes=elasticsearch-01,elasticsearch
