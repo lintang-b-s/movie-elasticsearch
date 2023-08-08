@@ -1,12 +1,12 @@
 # movie-elasticsearch
 elasticsearch with movie data
 
-api untuk searching movie pakai elasticsearch
+api untuk searching movie pakai elasticsearch. Data movie dari tahun 2020 sampai 2023
 step to import movie data:
 1. docker compose up -d
 2. python3 importElastic.py
+3. import postman collection
+4. try api via postman collection!
 
  
- pagination size 10 , from document ke 5000:
-curl -XGET '127.0.0.1:9200/movieswiki/_search?size=10&from=5000&pretty=true'
-
+ 
