@@ -1,8 +1,11 @@
-version: '3.9'
+version: '3.8'
+
+networks:
+  elastic:
+    driver: bridge
+    external: false
+
 services:
-
-
-
   app:
    build: .
    container_name: app
@@ -11,64 +14,66 @@ services:
      - ELASTICSEARCH_URL=elasticsearch:9200
    ports:
      - 8080:8080
+   networks:
+     - elastic
+   depends_on:
+    - elasticsearch
 
-#  integration:
-#    build:
-#      context: .
-#      dockerfile: integration-test/Dockerfile
-#    container_name: integration
-#    image: integration
-#    depends_on:
-#      - app
+
+
+
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.4.0
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
     container_name: elasticsearch
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
     ports:
       - 9200:9200
-    restart: always
     environment:
+      - cluster-name=elastic-cluster
       - xpack.security.enabled=false
-      - discovery.type=single-node
+#      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - node.name=elasticsearch-01
+      - cluster.initial_master_nodes=elasticsearch-01,elasticsearch
+      - discovery.seed_hosts=elasticsearch
     ulimits:
       memlock:
         soft: -1
         hard: -1
-  kibana:
-    depends_on:
-      - elasticsearch
-    image: docker.elastic.co/kibana/kibana:8.4.0
-    container_name: kibana
-    volumes:
-      - kibana-data:/usr/share/kibana/data
-    ports:
-      - 5601:5601
-    restart: always
-    environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - elastic
 
-  # logstash01:
-  #   depends_on:
-  #     - elasticsearch
-  #     - kibana
-  #   image: docker.elastic.co/logstash/logstash:8.4.0
-  #   labels:
-  #     co.elastic.logs/module: logstash
-  #   user: root
-  #   volumes:
-  #     - "./logstash_ingest_data/:/usr/share/logstash/ingest_data/"
-  #     - "./json-read-movie.conf:/usr/share/logstash/pipeline/logstash.conf:ro"
-  #   environment:
-  #     - xpack.monitoring.enabled=false
-  #     - ELASTIC_HOSTS=http://elasticsearch:9200
+
+  elasticsearch-01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.9.0
+    container_name: elasticsearch-01
+    volumes:
+      - elasticsearch-data-01:/usr/share/elasticsearch/data
+
+    environment:
+      - cluster-name=elastic-cluster
+      - xpack.security.enabled=false
+#      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - node.name=elasticsearch-01
+      - cluster.initial_master_nodes=elasticsearch-01,elasticsearch
+      - discovery.seed_hosts=elasticsearch
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - elastic
+
+
+
 
 volumes:
   elasticsearch-data:
     driver: local
-  kibana-data:
+  elasticsearch-data-01:
     driver: local
-
 
 

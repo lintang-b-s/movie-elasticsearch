@@ -1,21 +1,26 @@
 { "peta":
-      { 
+      { "settings" : {
+        "index" : {
+          "number_of_shards" : 1,
+          "number_of_replicas" : 0
+        }
+      },
         "mappings": {
           "properties": {
             "releaseYear": { "type": "integer"},
-            "title": { 
+            "title": {
               "type": "text",
               "fields": {
                 "raw": {"type":  "search_as_you_type"}
               }
             },
-            "director":  { 
+            "director":  {
               "type": "text",
               "fields": {
                 "raw": {"type":  "keyword"}
               }
             },
-            "cast":   { 
+            "cast":   {
               "type": "text",
               "fields": {
                 "raw": {"type":  "keyword"}
@@ -27,7 +32,7 @@
             "image": {"type":  "keyword"},
             "url": {"type": "keyword"}
           }
-        }  
+        }
       }
 
 }
